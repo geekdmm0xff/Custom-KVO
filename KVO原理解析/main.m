@@ -53,9 +53,11 @@ int main(int argc, const char * argv[]) {
         
         {
             Person *p = [Person new];
+            p.name = @"aa";
             NSLog(@"class:%@ isa:%@", p.class, object_getClass(p));
             [p my_addObserver:p forKeyPath:@"name" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld];
             NSLog(@"class:%@ isa:%@", p.class, object_getClass(p));
+            p.name = @"ss";
 
         }
     }

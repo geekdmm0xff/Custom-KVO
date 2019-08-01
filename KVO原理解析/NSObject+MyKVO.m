@@ -60,7 +60,7 @@ const char *kMyKVOObserversArray = "MyKVOObserversArray";
     }
     
     // 4. 加方法：setter + class
-    BOOL r = class_addMethod(self.class, setterSEL, (IMP)MyKVONotifying_Setter, "v@:@");
+    BOOL r = class_addMethod(self.class, setterSEL, (IMP)MyKVONotifying_Setter, "#@:@");
     if (!r) {
         NSLog(@"add setter failure");
     }
@@ -83,12 +83,35 @@ const char *kMyKVOObserversArray = "MyKVOObserversArray";
 }
 
 #pragma mark - Private Methods
-
+// @selecor(setName:) kvc取值 super
 void MyKVONotifying_Setter(id self, SEL _cmd, NSString *value) {
+    NSString *key = [[NSStringFromSelector(_cmd).lowercaseString stringByReplacingOccurrencesOfString:@"set" withString:@""] stringByReplacingOccurrencesOfString:@":" withString:@""];
+    NSString *oldVal = [self valueForKey:key];
+    
+    // call super
+    struct objc_super supCls;
+    supCls.receiver = self;
+    supCls.super_class = class_getSuperclass(object_getClass(self));
+    ((void (*)(void *, SEL, id))(void *)objc_msgSendSuper)(&supCls, _cmd, value);
+    
+    // call obsever
+    NSMutableArray *obs = objc_getAssociatedObject(self, kMyKVOObserversArray);
+    for (MyKVOObserver *ob in obs) {
+        if ([ob.key isEqualToString:key]) {
+            NSMutableDictionary *map = @{}.mutableCopy;
+            if (ob.options & NSKeyValueObservingOptionOld) {
+                map[NSKeyValueChangeOldKey] = oldVal;
+            }
+            if (ob.options & NSKeyValueObservingOptionNew) {
+                map[NSKeyValueChangeNewKey] = value;
+            }
+            [ob.observer my_observeValueForKeyPath:key ofObject:self change:map];
+        }
+    }
     
 }
 
-void MyKVONotifying_Class(id self, SEL _cmd) {
-    
+Class MyKVONotifying_Class(id self, SEL _cmd) {
+    return class_getSuperclass(object_getClass(self));
 }
 @end

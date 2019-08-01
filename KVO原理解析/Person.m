@@ -51,4 +51,8 @@
     NSLog(@"%@", keyPath);
 }
 
+- (void)my_observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change {
+    NSLog(@"%@ %@", keyPath, change);
+
+}
 @end
