@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Person : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, assign) NSInteger age;
+@property (nonatomic, copy) NSString *age;
 
 - (void)bindInfo:(NSDictionary *)info;
 @end

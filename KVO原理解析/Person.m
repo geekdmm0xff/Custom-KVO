@@ -26,7 +26,7 @@
     }
 }
 
-- (void)setAge:(NSInteger)age {
+- (void)setAge:(NSString *)age {
     if (_age != age) {
         [self willChangeValueForKey:@"age"];
         _age = age;
@@ -36,7 +36,7 @@
 
 - (void)bindInfo:(NSDictionary *)info {
     NSString *name = info[@"name"];
-    NSInteger age = [info[@"age"] integerValue];
+    NSString *age = info[@"age"];
     
     [self willChangeValueForKey:@"name"];
     [self willChangeValueForKey:@"age"];
